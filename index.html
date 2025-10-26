@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Alias (Українською)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#007bff">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <div class="game-container">
+        
+        <div class="scoreboard" id="scoreboard">
+            <div id="team1-display" class="team-score">
+                <span id="team1-name">Команда 1</span>: <span id="team1-score">0</span>
+            </div>
+            <div id="team2-display" class="team-score">
+                <span id="team2-name">Команда 2</span>: <span id="team2-score">0</span>
+            </div>
+        </div>
+
+        <div id="start-screen" class="screen active">
+            <h1>IT Alias</h1>
+            <p>Налаштуйте гру</p>
+            <div class="settings">
+                <input type="text" id="team1-input" placeholder="Назва Команди 1" value="Команда 1">
+                <input type="text" id="team2-input" placeholder="Назва Команди 2" value="Команда 2">
+                
+                <label for="time-input">Час раунду (секунд):</label>
+                <input type="number" id="time-input" value="60" min="10">
+                
+                <label for="rounds-input">Кількість раундів (на команду):</label>
+                <input type="number" id="rounds-input" value="5" min="1">
+            </div>
+            <button id="start-btn" class="btn-primary">Почати гру</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="stats-bar">
+                <div class="stat">
+                    <span>Раунд:</span>
+                    <span id="round-counter">1 / 5</span>
+                </div>
+                <div class="stat">
+                    <span>Час:</span>
+                    <span id="timer">60</span>
+                </div>
+            </div>
+
+            <div id="word-display">
+                Слово для пояснення
+            </div>
+
+            <div class="buttons">
+                <button id="skip-btn" class="btn-secondary">Пропустити</button>
+                <button id="correct-btn" class="btn-success">Зараховано</button>
+            </div>
+        </div>
+
+        <div id="turn-end-screen" class="screen">
+            <h2>Час вийшов!</h2>
+            <p id="round-summary"></p>
+            <p class="next-turn-text">Наступний хід: <span id="next-team-name"></span></p>
+            <button id="next-turn-btn" class="btn-primary">Почати раунд</button>
+            <button id="reset-game-btn" class="btn-tertiary">Нова гра</button>
+        </div>
+
+        <div id="game-over-screen" class="screen">
+            <h2>Гру завершено!</h2>
+            <p id="winner-message">Перемогла Команда 1!</p>
+            <p id="final-score-summary">Фінальний рахунок: 10 - 5</p>
+            <button id="new-game-btn" class="btn-primary">Почати нову гру</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Сервіс-воркер успішно зареєстровано!');
+                    })
+                    .catch(error => {
+                        console.log('Помилка реєстрації сервіс-воркера: ', error);
+                    });
+            });
+        }
+    </script>
+    
+</body>
+</html>
