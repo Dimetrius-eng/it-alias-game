@@ -178,3 +178,48 @@ button:disabled {
   color: #888888;
   cursor: not-allowed;
 }
+
+/* --- НОВІ СТИЛІ: Головне меню --- */
+#main-menu-screen h1 {
+  color: #0056b3;
+  margin-top: 0;
+  margin-bottom: 30px; /* Більше відступ */
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Відстань між кнопками */
+}
+
+/* Кнопка "Продовжити" на головному меню */
+#main-menu-screen #continue-btn {
+  display: none; /* Сховано за замовчуванням */
+}
+
+/* --- НОВІ СТИЛІ: Екран правил --- */
+.rules-content {
+  text-align: left;
+  margin-bottom: 25px;
+}
+.rules-content ul {
+  padding-left: 20px;
+}
+.rules-content li {
+  margin-bottom: 10px;
+}
+.rules-content p {
+  margin-bottom: 15px;
+}
+
+/* --- НОВІ СТИЛІ: Випадаючий список (Select) --- */
+.settings select {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: white; /* Для iOS */
+}
