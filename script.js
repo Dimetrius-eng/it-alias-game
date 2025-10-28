@@ -9,12 +9,12 @@ let gameState = {
   team1Name: "Команда 1",
   team2Name: "Команда 2",
   currentTeam: 1, 
-  roundTime: 60,
-  totalRounds: 5,
+  roundTime: 60,  // Стандартний час (центр слайдера 10-120)
+  totalRounds: 3, // ЗМІНА: Стандартні раунди (центр слайдера 1-5)
   currentRound: 0,
   isGameInProgress: false,
   lastRoundScore: 0,
-  selectedCategory: 'mixed' // ЗМІНА: "mixed" тепер за замовчуванням
+  selectedCategory: 'mixed'
 };
 
 // --- Змінні для раунду (не зберігаються) ---
@@ -23,7 +23,8 @@ let timeLeft = 0;
 let timerInterval;
 
 // --- Знаходимо елементи на HTML-сторінці ---
-// (Тут нічого не змінилося)
+
+// Екрани
 const screens = document.querySelectorAll('.screen');
 const mainMenuScreen = document.getElementById('main-menu-screen'); 
 const settingsScreen = document.getElementById('settings-screen'); 
@@ -31,16 +32,24 @@ const rulesScreen = document.getElementById('rules-screen');
 const gameScreen = document.getElementById('game-screen');
 const turnEndScreen = document.getElementById('turn-end-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
+// Табло
 const scoreboard = document.getElementById('scoreboard');
 const team1NameDisplay = document.getElementById('team1-name');
 const team1ScoreDisplay = document.getElementById('team1-score');
 const team2NameDisplay = document.getElementById('team2-name');
 const team2ScoreDisplay = document.getElementById('team2-score');
+
+// Налаштування (на екрані settings-screen)
 const team1Input = document.getElementById('team1-input');
 const team2Input = document.getElementById('team2-input');
-const timeInput = document.getElementById('time-input');
-const roundsInput = document.getElementById('rounds-input'); 
+// ЗМІНА: Нові селектори для слайдерів
+const timeSlider = document.getElementById('time-slider');
+const timeOutput = document.getElementById('time-output');
+const roundsSlider = document.getElementById('rounds-slider');
+const roundsOutput = document.getElementById('rounds-output');
 const categorySelect = document.getElementById('category-select'); 
+
+// Кнопки
 const continueBtn = document.getElementById('continue-btn'); 
 const newGameMenuBtn = document.getElementById('new-game-menu-btn'); 
 const rulesBtn = document.getElementById('rules-btn');             
@@ -51,6 +60,7 @@ const nextTurnBtn = document.getElementById('next-turn-btn');
 const resetGameBtn = document.getElementById('reset-game-btn'); 
 const newGameBtn = document.getElementById('new-game-btn'); 
 const backButtons = document.querySelectorAll('.btn-primary[data-target], .btn-tertiary[data-target]');
+// Ігрові поля
 const timerDisplay = document.getElementById('timer');
 const roundCounterDisplay = document.getElementById('round-counter'); 
 const wordDisplay = document.getElementById('word-display');
@@ -60,8 +70,23 @@ const winnerMessageDisplay = document.getElementById('winner-message');
 const finalScoreSummaryDisplay = document.getElementById('final-score-summary');
 
 // --- Прив'язуємо функції до кнопок ---
-// (Тут нічого не змінилося)
-newGameMenuBtn.addEventListener('click', () => showScreen(settingsScreen));
+
+// ЗМІНА: Логіка кнопки "Нова гра" з підтвердженням
+newGameMenuBtn.addEventListener('click', () => {
+  // Перевіряємо, чи є збережена гра (чи видно кнопку "Продовжити")
+  if (continueBtn.style.display === 'block') {
+    // Якщо є, питаємо користувача
+    if (confirm("Ви впевнені, що хочете почати нову гру? Весь поточний прогрес буде втрачено.")) {
+      // Якщо користувач натиснув "Так", переходимо до налаштувань
+      showScreen(settingsScreen);
+    }
+    // Якщо натиснув "Ні", нічого не відбувається
+  } else {
+    // Якщо збереженої гри немає, просто переходимо
+    showScreen(settingsScreen);
+  }
+});
+
 rulesBtn.addEventListener('click', () => showScreen(rulesScreen));
 startBtn.addEventListener('click', setupNewGame);
 continueBtn.addEventListener('click', continueGame); 
@@ -80,6 +105,15 @@ backButtons.forEach(button => {
   });
 });
 
+// НОВЕ: Оновлення значень слайдерів у реальному часі
+timeSlider.oninput = function() {
+  timeOutput.value = this.value;
+}
+roundsSlider.oninput = function() {
+  roundsOutput.value = this.value;
+}
+
+
 // --- Робота зі сховищем (localStorage) ---
 // (Тут нічого не змінилося)
 const STORAGE_KEY = 'itAliasSavedGame';
@@ -87,7 +121,6 @@ const STORAGE_KEY = 'itAliasSavedGame';
 function saveGameState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
 }
-
 function loadGameState() {
   const savedData = localStorage.getItem(STORAGE_KEY);
   if (savedData) {
@@ -96,7 +129,6 @@ function loadGameState() {
   }
   return false; 
 }
-
 function clearGameState() {
   localStorage.removeItem(STORAGE_KEY);
 }
@@ -106,17 +138,14 @@ function clearGameState() {
 async function initializeApp() {
   newGameMenuBtn.disabled = true;
   continueBtn.disabled = true;
-
   try {
     const response = await fetch('./words.json');
     if (!response.ok) {
       throw new Error('Не вдалося завантажити слова. Перевірте words.json');
     }
     allWordsByCategory = await response.json(); 
-    
     newGameMenuBtn.disabled = false;
     console.log(`Завантажено ${Object.keys(allWordsByCategory).length} категорій слів.`);
-
   } catch (error) {
     console.error(error);
     const h1 = mainMenuScreen.querySelector('h1');
@@ -126,12 +155,10 @@ async function initializeApp() {
     }
     return;
   }
-
   if (loadGameState() && gameState.isGameInProgress) {
     continueBtn.style.display = 'block';
     continueBtn.disabled = false;
   }
-  
   showScreen(mainMenuScreen); 
   scoreboard.style.display = 'none';
 }
@@ -143,26 +170,23 @@ function showScreen(screenToShow) {
   screenToShow.classList.add('active');
 }
 
-// НОВА ДОПОМІЖНА ФУНКЦІЯ: Отримуємо слова для категорії
 function getWordsForCategory(category) {
   if (category === 'mixed') {
-    // Об'єднуємо всі слова з усіх категорій
     return [].concat(allWordsByCategory.easy, allWordsByCategory.medium, allWordsByCategory.hard);
   }
-  // Повертаємо слова з конкретної категорії
-  return allWordsByCategory[category] || []; // Повертаємо порожній масив, якщо категорія не знайдена
+  return allWordsByCategory[category] || []; 
 }
 
 
 // 1. Налаштування НОВОЇ гри
 function setupNewGame() {
-  // (Тут нічого не змінилося)
   clearGameState(); 
 
   gameState.team1Name = team1Input.value || "Команда 1";
   gameState.team2Name = team2Input.value || "Команда 2";
-  gameState.roundTime = parseInt(timeInput.value, 10) || 60;
-  gameState.totalRounds = parseInt(roundsInput.value, 10) || 5; 
+  // ЗМІНА: Читаємо значення зі слайдерів
+  gameState.roundTime = parseInt(timeSlider.value, 10);
+  gameState.totalRounds = parseInt(roundsSlider.value, 10); 
   gameState.selectedCategory = categorySelect.value; 
 
   gameState.team1Score = 0;
@@ -180,20 +204,23 @@ function setupNewGame() {
 
 // 2. Продовження гри
 function continueGame() {
-  // (Тут нічого не змінилося)
   updateScoreboard();
   scoreboard.style.display = 'flex';
   
+  // ЗМІНА: Відновлюємо значення полів І слайдерів
   team1Input.value = gameState.team1Name;
   team2Input.value = gameState.team2Name;
-  timeInput.value = gameState.roundTime;
-  roundsInput.value = gameState.totalRounds;
+  timeSlider.value = gameState.roundTime;
+  timeOutput.value = gameState.roundTime;
+  roundsSlider.value = gameState.totalRounds;
+  roundsOutput.value = gameState.totalRounds;
   categorySelect.value = gameState.selectedCategory; 
 
   showRoundSummary();
 }
 
 // 3. Початок нового раунду
+// (Тут нічого не змінилося)
 function startRound() {
   roundScore = 0; 
   timeLeft = gameState.roundTime;
@@ -212,8 +239,7 @@ function startRound() {
     document.getElementById('team1-display').classList.remove('active-team');
     document.getElementById('team2-display').classList.add('active-team');
   }
-
-  // ЗМІНА: Використовуємо нову допоміжну функцію
+  
   const categoryWords = getWordsForCategory(gameState.selectedCategory);
   if (!categoryWords || categoryWords.length === 0) {
     console.error(`Категорія ${gameState.selectedCategory} не знайдена або порожня!`);
@@ -225,7 +251,6 @@ function startRound() {
   nextWord();
   showScreen(gameScreen);
   startTimer();
-  
   saveGameState(); 
 }
 
@@ -243,9 +268,9 @@ function startTimer() {
 }
 
 // 5. Показати наступне слово
+// (Тут нічого не змінилося)
 function nextWord() {
   if (availableWords.length === 0) {
-    // ЗМІНА: Використовуємо нову допоміжну функцію
     const categoryWords = getWordsForCategory(gameState.selectedCategory);
     if (!categoryWords || categoryWords.length === 0) {
       wordDisplay.textContent = "Слова скінчились!";
@@ -275,17 +300,13 @@ function handleSkip() {
 // (Тут нічого не змінилося)
 function endRound() {
   clearInterval(timerInterval); 
-
   if (gameState.currentTeam === 1) {
     gameState.team1Score += roundScore;
   } else {
     gameState.team2Score += roundScore;
   }
-  
   gameState.lastRoundScore = roundScore; 
-  
   updateScoreboard();
-  
   if (gameState.currentTeam === 2 && gameState.currentRound >= gameState.totalRounds) {
     gameState.isGameInProgress = false; 
     showWinner();
@@ -326,10 +347,8 @@ function showWinner() {
   } else {
     winnerMsg = "Нічия! 🤝"; 
   }
-  
   winnerMessageDisplay.textContent = winnerMsg;
   finalScoreSummaryDisplay.textContent = `Фінальний рахунок: ${gameState.team1Name} (${gameState.team1Score}) - ${gameState.team2Name} (${gameState.team2Score})`;
-  
   showScreen(gameOverScreen); 
 }
 
@@ -341,11 +360,14 @@ function resetGame() {
   scoreboard.style.display = 'none'; 
   continueBtn.style.display = 'none'; 
   
+  // ЗМІНА: Скидаємо значення полів І слайдерів до стандартних
   team1Input.value = "Команда 1";
   team2Input.value = "Команда 2";
-  timeInput.value = 60;
-  roundsInput.value = 5; 
-  categorySelect.value = "mixed"; // ЗМІНА: Скидаємо на "mixed"
+  timeSlider.value = 60;
+  timeOutput.value = 60;
+  roundsSlider.value = 3;
+  roundsOutput.value = 3;
+  categorySelect.value = "mixed"; 
   
   gameState.lastRoundScore = 0; 
   
