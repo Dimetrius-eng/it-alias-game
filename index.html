@@ -53,11 +53,15 @@
                 <input type="text" id="team1-input" placeholder="Назва Команди 1" value="Команда 1">
                 <input type="text" id="team2-input" placeholder="Назва Команди 2" value="Команда 2">
                 
-                <label for="time-input">Час раунду (секунд):</label>
-                <input type="number" id="time-input" value="60" min="10">
+                <div class="slider-container">
+                    <label for="time-slider">Час раунду: <output id="time-output">60</output> с</label>
+                    <input type="range" id="time-slider" min="10" max="120" step="10" value="60">
+                </div>
                 
-                <label for="rounds-input">Кількість раундів (на команду):</label>
-                <input type="number" id="rounds-input" value="5" min="1">
+                <div class="slider-container">
+                    <label for="rounds-slider">Кількість раундів: <output id="rounds-output">3</output></label>
+                    <input type="range" id="rounds-slider" min="1" max="5" step="1" value="3">
+                </div>
 
                 <label for="category-select">Складність (словник):</label>
                 <select id="category-select">
@@ -72,53 +76,20 @@
         </div>
 
         <div id="game-screen" class="screen">
-            <div class="stats-bar">
-                <div class="stat">
-                    <span>Раунд:</span>
-                    <span id="round-counter">1 / 5</span>
-                </div>
-                <div class="stat">
-                    <span>Час:</span>
-                    <span id="timer">60</span>
-                </div>
-            </div>
             <div id="word-display">
                 Слово для пояснення
             </div>
-            <div class="buttons">
-                <button id="skip-btn" class="btn-secondary">Пропустити</button>
-                <button id="correct-btn" class="btn-success">Зараховано</button>
             </div>
-        </div>
-
         <div id="turn-end-screen" class="screen">
-            <h2>Час вийшов!</h2>
-            <p id="round-summary"></p>
-            <p class="next-turn-text">Наступний хід: <span id="next-team-name"></span></p>
-            <button id="next-turn-btn" class="btn-primary">Почати раунд</button>
-            <button id="reset-game-btn" class="btn-tertiary">Нова гра</button>
-        </div>
-
+            </div>
         <div id="game-over-screen" class="screen">
-            <h2>Гру завершено!</h2>
-            <p id="winner-message">Перемогла Команда 1!</p>
-            <p id="final-score-summary">Фінальний рахунок: 10 - 5</p>
-            <button id="new-game-btn" class="btn-primary">Почати нову гру</button>
-        </div>
+            </div>
     </div>
 
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('Сервіс-воркер успішно зареєстровано!');
-                    })
-                    .catch(error => {
-                        console.log('Помилка реєстрації сервіс-воркера: ', error);
-                    });
-            });
+            // ... (код реєстрації sw.js)
         }
     </script>
     
