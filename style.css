@@ -159,3 +159,22 @@ button {
 .btn-secondary:hover { background-color: #e0a800; }
 .btn-tertiary { background-color: #f0f0f0; color: #555; border: 1px solid #ddd; }
 .btn-tertiary:hover { background-color: #e2e2e2; }
+
+/* --- Стилі для кнопки "Продовжити" --- */
+#continue-btn {
+  display: none; /* Сховано за замовчуванням */
+  background-color: #ffc107; /* Жовтий, як кнопка "Пропустити" */
+  color: #333;
+  margin-bottom: 10px; /* Відступ від кнопки "Почати" */
+}
+
+#continue-btn:hover {
+  background-color: #e0a800;
+}
+
+/* --- Стилі для неактивних кнопок (поки слова не завантажились) --- */
+button:disabled {
+  background-color: #cccccc;
+  color: #888888;
+  cursor: not-allowed;
+}
