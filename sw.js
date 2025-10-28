@@ -1,7 +1,7 @@
-// ВЕРСІЯ 9 - Слайдери та вікно підтвердження
-const CACHE_NAME = 'it-alias-v9-sliders-confirm';
+// ВЕРСІЯ 10 - Виправлення критичного збою HTML
+const CACHE_NAME = 'it-alias-v10-html-crash-fix';
 
-// Список файлів не змінився
+// Список файлів не змінився, але вміст index.html - так
 const urlsToCache = [
   './',
   './index.html',
@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Відкрито кеш v9');
+        console.log('Відкрито кеш v10');
         const localUrls = urlsToCache.filter(url => !url.startsWith('http'));
         const externalUrls = urlsToCache.filter(url => url.startsWith('http'));
         
@@ -30,7 +30,7 @@ self.addEventListener('install', event => {
           });
       })
       .catch(err => {
-        console.error('Помилка cache.addAll у v9:', err);
+        console.error('Помилка cache.addAll у v10:', err);
       })
   );
 });
@@ -45,9 +45,9 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// 3. Подія "activate" (Видаляє всі старі кеші)
+// 3. Подія "activate" (Видаляє всі старі кеші v1-v9)
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME]; // Залишити тільки v9
+  const cacheWhitelist = [CACHE_NAME]; // Залишити тільки v10
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -60,7 +60,7 @@ self.addEventListener('activate', event => {
       );
     })
     .then(() => {
-        console.log('Service Worker v9 активовано і перехоплює контроль!');
+        console.log('Service Worker v10 активовано і перехоплює контроль!');
         return self.clients.claim();
     })
   );
