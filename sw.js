@@ -1,14 +1,14 @@
-// ВЕРСІЯ 5 - Фінальна для GitHub
-const CACHE_NAME = 'it-alias-v5-github';
+// ВЕРСІЯ 6 - Додано кешування words.json
+const CACHE_NAME = 'it-alias-v6-with-words';
 
-// Повний список файлів.
-// Крапка-слеш (./) означає "у цій же папці", це найнадійніший шлях.
+// Оновлений список файлів
 const urlsToCache = [
-  './', // Це закешує головну сторінку
+  './',
   './index.html',
   './style.css',
   './script.js',
   './manifest.json',
+  './words.json', // <-- НАШ НОВИЙ ФАЙЛ
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
   'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap'
@@ -19,11 +19,11 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Відкрито кеш v5 (GitHub)');
+        console.log('Відкрито кеш v6');
         return cache.addAll(urlsToCache);
       })
       .catch(err => {
-        console.error('Помилка cache.addAll у v5:', err);
+        console.error('Помилка cache.addAll у v6:', err);
       })
   );
 });
@@ -33,15 +33,14 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Якщо є в кеші - віддаємо, інакше йдемо в мережу
         return response || fetch(event.request); 
       })
   );
 });
 
-// 3. Подія "activate" (Видаляє всі старі кеші: v1, v2, v3, v4)
+// 3. Подія "activate" (Видаляє всі старі кеші)
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME]; // Залишити тільки v5
+  const cacheWhitelist = [CACHE_NAME]; // Залишити тільки v6
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -54,8 +53,8 @@ self.addEventListener('activate', event => {
       );
     })
     .then(() => {
-        console.log('Service Worker v5 активовано і перехоплює контроль!');
-        return self.clients.claim(); // Взяти контроль негайно
+        console.log('Service Worker v6 активовано і перехоплює контроль!');
+        return self.clients.claim();
     })
   );
 });
