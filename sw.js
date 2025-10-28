@@ -1,7 +1,7 @@
-// ВЕРСІЯ 8 - для змішаного режиму та нових слів
-const CACHE_NAME = 'it-alias-v8-mixed-mode';
+// ВЕРСІЯ 9 - Слайдери та вікно підтвердження
+const CACHE_NAME = 'it-alias-v9-sliders-confirm';
 
-// Список файлів не змінився, але їх вміст - так
+// Список файлів не змінився
 const urlsToCache = [
   './',
   './index.html',
@@ -19,20 +19,18 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Відкрито кеш v8');
-        // Обережне кешування зовнішніх ресурсів
+        console.log('Відкрито кеш v9');
         const localUrls = urlsToCache.filter(url => !url.startsWith('http'));
         const externalUrls = urlsToCache.filter(url => url.startsWith('http'));
-
+        
         return cache.addAll(localUrls)
           .then(() => {
-            // Кешуємо зовнішні ресурси з no-cors
             const externalRequests = externalUrls.map(url => new Request(url, { mode: 'no-cors' }));
             return Promise.all(externalRequests.map(req => cache.add(req)));
           });
       })
       .catch(err => {
-        console.error('Помилка cache.addAll у v8:', err);
+        console.error('Помилка cache.addAll у v9:', err);
       })
   );
 });
@@ -49,7 +47,7 @@ self.addEventListener('fetch', event => {
 
 // 3. Подія "activate" (Видаляє всі старі кеші)
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME]; // Залишити тільки v8
+  const cacheWhitelist = [CACHE_NAME]; // Залишити тільки v9
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -62,7 +60,7 @@ self.addEventListener('activate', event => {
       );
     })
     .then(() => {
-        console.log('Service Worker v8 активовано і перехоплює контроль!');
+        console.log('Service Worker v9 активовано і перехоплює контроль!');
         return self.clients.claim();
     })
   );
